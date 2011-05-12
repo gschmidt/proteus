@@ -1,5 +1,5 @@
 #require('/framework/lib/LongPollClient.js')
-#require('/client/jquery-1.4.4.js')
+#require('/client/jquery-1.6.js')
 
 var onMessage = function (message) {
   if (message === 'reload') {
