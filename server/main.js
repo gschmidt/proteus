@@ -32,6 +32,71 @@ var
   PORT = 4000,
   WEBROOT = path.join(project_root, 'public');
 
+
+///// MONGO TEST /////////
+
+var Db = require('../3rdparty/node-mongodb-native/lib/mongodb').Db,
+  Connection = require('../3rdparty/node-mongodb-native/lib/mongodb').Connection,
+  Server = require('../3rdparty/node-mongodb-native/lib/mongodb').Server,
+  BSON = require('../3rdparty/node-mongodb-native/lib/mongodb').BSONPure;
+  //BSON = require('../3rdparty/node-mongodb-native/lib/mongodb').BSONNative;
+
+
+
+var host = 'localhost';
+var port = Connection.DEFAULT_PORT;
+sys.puts("Connecting to " + host + ":" + port);
+// for some reason, native_parser:true is failing:
+//   Error: Cannot find module '../../external-libs/bson/bson'
+// yet build/node-mongodb-native/external-libs/bson/bson.node exists..
+
+var db = new Db('node-mongo-examples', new Server(host, port, {}), {native_parser:false});
+db.open(function(err, db) {
+  db.dropDatabase(function(err, result) {
+    db.collection('test', function(err, collection) {
+      sys.puts("COLL: " + collection);
+      sys.puts("ERR: " + err);
+      // Erase all records from the collection, if any
+      collection.remove(function() {
+        // Insert 3 records
+        for(var i = 0; i < 3; i++) {
+          collection.insert({'a':i});
+        }
+        
+        collection.count(function(err, count) {
+          sys.puts("There are " + count + " records in the test collection. Here they are:");
+
+          collection.find(function(err, cursor) {
+            cursor.each(function(err, item) {
+              if(item != null) {
+                sys.puts(sys.inspect(item));
+                sys.puts("created at " + new Date(item._id.generationTime) + "\n")
+              }
+              // Null signifies end of iterator
+              if(item == null) {                
+                // Destory the collection
+                collection.drop(function(err, collection) {
+                  db.close();
+                });
+              }
+            });
+          });          
+        });
+      });      
+    });
+  });
+});
+////// END STUPID LAME TEST ////////////
+
+
+
+
+
+
+
+
+
+
 var long_poll_server = LongPollServer.create("/ev");
 ALL_CONNECTIONS = {}; // map from URL to connection object
 

@@ -7,3 +7,6 @@ mongodb-osx-x86_64-1.8.1, official build from mongodb.org
 paperboy:
 http://github.com/felixge/node-paperboy
 commit b4d2dd8, retrieved 10/3/2010
+
+node-mongodb-native:
+https://github.com/christkv/node-mongodb-native/tarball/V0.9.4.3

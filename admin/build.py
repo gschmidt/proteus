@@ -17,6 +17,19 @@ def main():
     check_call(['make'])
     check_call(['make', 'install'])
 
+    print "*** Building node-mongodb-native ***"
+    # This is sloppy. node-mongodb-native can't be relocated, but it's
+    # small, so we copy the whole package and then build it.
+    check_call(['rm', '-rf', path_in_project('build/node-mongodb-native')])
+    check_call(['cp', '-R', path_in_project('3rdparty/node-mongodb-native'),
+                path_in_project('build')])
+    cd_in_project('build/node-mongodb-native')
+    saved_path = os.environ['PATH']
+    os.environ['PATH'] = (os.environ['PATH'] + ":" + 
+                          path_in_project('build/node/bin'))
+    check_call(['make'])
+    os.environ['PATH'] = saved_path
+
     print
     print '/                                 \\'
     print '| JACK ME INTO THE MATRIX CAPTAIN |'
