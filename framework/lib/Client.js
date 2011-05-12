@@ -18,4 +18,4 @@ Client.XMLHttpRequest = function () {
     return new ActiveXObject("Msxml2.XMLHTTP.3.0");
   } catch (e) {}
   throw Error("No XMLHttpRequest");
-}
+};

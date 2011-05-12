@@ -21,6 +21,7 @@
 
 #require('/framework/lib/basics.js')
 #require('/framework/lib/LongPollServer.js')
+#require('/framework/lib/ServerSession.js')
 
 var
   sys = require('sys'),
@@ -32,73 +33,8 @@ var
   PORT = 4000,
   WEBROOT = path.join(project_root, 'public');
 
-
-///// MONGO TEST /////////
-
-var Db = require('../3rdparty/node-mongodb-native/lib/mongodb').Db,
-  Connection = require('../3rdparty/node-mongodb-native/lib/mongodb').Connection,
-  Server = require('../3rdparty/node-mongodb-native/lib/mongodb').Server,
-  BSON = require('../3rdparty/node-mongodb-native/lib/mongodb').BSONPure;
-  //BSON = require('../3rdparty/node-mongodb-native/lib/mongodb').BSONNative;
-
-
-
-var host = 'localhost';
-var port = Connection.DEFAULT_PORT;
-sys.puts("Connecting to " + host + ":" + port);
-// for some reason, native_parser:true is failing:
-//   Error: Cannot find module '../../external-libs/bson/bson'
-// yet build/node-mongodb-native/external-libs/bson/bson.node exists..
-
-var db = new Db('node-mongo-examples', new Server(host, port, {}), {native_parser:false});
-db.open(function(err, db) {
-  db.dropDatabase(function(err, result) {
-    db.collection('test', function(err, collection) {
-      sys.puts("COLL: " + collection);
-      sys.puts("ERR: " + err);
-      // Erase all records from the collection, if any
-      collection.remove(function() {
-        // Insert 3 records
-        for(var i = 0; i < 3; i++) {
-          collection.insert({'a':i});
-        }
-        
-        collection.count(function(err, count) {
-          sys.puts("There are " + count + " records in the test collection. Here they are:");
-
-          collection.find(function(err, cursor) {
-            cursor.each(function(err, item) {
-              if(item != null) {
-                sys.puts(sys.inspect(item));
-                sys.puts("created at " + new Date(item._id.generationTime) + "\n")
-              }
-              // Null signifies end of iterator
-              if(item == null) {                
-                // Destory the collection
-                collection.drop(function(err, collection) {
-                  db.close();
-                });
-              }
-            });
-          });          
-        });
-      });      
-    });
-  });
-});
-////// END STUPID LAME TEST ////////////
-
-
-
-
-
-
-
-
-
-
 var long_poll_server = LongPollServer.create("/ev");
-ALL_CONNECTIONS = {}; // map from URL to connection object
+var server_session = ServerSession.create();
 
 var client_file_object = getFileObject('client/main.js');
 if (!client_file_object)
@@ -106,12 +42,7 @@ if (!client_file_object)
 var client_code_errors = client_file_object.preflight();
 if (is_debug_mode) {
   client_file_object.onDirty(function() {
-    for (url in ALL_CONNECTIONS) {
-      if (ALL_CONNECTIONS.hasOwnProperty(url)) {
-        var conn = ALL_CONNECTIONS[url];
-        conn.send('reload');
-      }
-    }
+    server_session.post('reload');
     // TODO: this sucks. we should restart immediately, and *then*
     // tell the clients? somehow?
     // TODO: this actually doesn't work at all. the client restarts,
@@ -136,6 +67,11 @@ if (client_code_errors.length > 0) {
   client_bundle = client_file_object.getBundle('/bundle');
 }
 
+server_session.onRpc('message', function (m, reply) {
+  server_session.post('message', "You said: " + m);
+  reply(true);
+});
+
 var startup = function () {
   http.createServer(function(req, res) {
     var url = require('url');
@@ -145,8 +81,7 @@ var startup = function () {
       var conn_info = long_poll_server.createConnection();
       var conn_obj = conn_info[0];
       var conn_url = conn_info[1];
-      // TODO: clean up when connection goes away! (..make connections go away!)
-      ALL_CONNECTIONS[conn_url] = conn_obj;
+      server_session.setupConnection(conn_obj);
       var client_env = {
         connection: conn_url
       };
@@ -161,13 +96,6 @@ var startup = function () {
       }).join('');
 
       var page = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head>' + env_setup + script_includes + '</head><body></body></html>';
-
-      var onMessage = function (m) {
-        conn_obj.send("You said: " + m);
-      };
-      var onStateChange = function () {
-      };
-      conn_obj.setHandlers(onMessage, onStateChange);
 
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(page);

@@ -132,21 +132,21 @@ InboundConnection.methods({
     self.receive_queue = [];
   },
   send: function (message) {
+    require('sys').log('queueing a message: ' + message);
     // TODO: impose maximum outgoing buffer length
     var self = this;
-    require('sys').log('and here we are');
     self.send_queue.push(message);
     // Do this on a timeout so that if N messages are sent in a row,
     // they will all be sent in one response
     setTimeout(function () {
-      require('sys').log('_flush_send from send');
       self._flush_send();
     }, 0);
   },
   _flush_send: function () {
     var self = this;
+    require('sys').log('_flush_send runs');
     if (self.pending_response) {
-      require('sys').log('_flush_send');
+      require('sys').log('_flush_send has a pending response');
       self.pending_response.writeHead(200, {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
@@ -159,6 +159,8 @@ InboundConnection.methods({
       clearTimeout(self.pending_response_timeout);
       self.pending_response_timeout = null;
     }
+    else
+      require('sys').log('_flush_send has to wait');
   },
   setDeathTime: function (timeout_secs) {
     UNIMPLEMENTED();
@@ -189,7 +191,6 @@ InboundConnection.methods({
         // the old one.
         if (self.pending_response)
           require('sys').log('bouncing dupe');
-        require('sys').log('_flush_send from dupe bounce');
         self._flush_send();
         // TODO assert self.pending_response === null
 
@@ -208,13 +209,10 @@ InboundConnection.methods({
         self.pending_response = resp;
         var LONG_POLL_TIMEOUT_MS = 30*1000; // TODO: move elsewhere
         self.pending_response_timeout = setTimeout(function () {
-          require('sys').log('_flush_send from timeout');
           self._flush_send();
         }, LONG_POLL_TIMEOUT_MS);
         if (self.send_queue.length > 0) {
-          require('sys').log('_flush_send from actual request');
           self._flush_send();
-          require('sys').log('back');
         }
       }
 
@@ -256,7 +254,6 @@ InboundConnection.methods({
         self.next_receive_serial += messages.length;
 
         // Acknowledge
-        require('sys').log('ack send'); // xcxc
         resp.writeHead(200, {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache',

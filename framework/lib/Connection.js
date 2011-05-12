@@ -11,8 +11,8 @@ Connection.methods({
    * until handlers are set (or maybe the connection isn't even opened
    * until then.)
    *
-   * @param onMessage {Function} Called to deliver a message
-   * @param onStateChange {String} Called to report that the
+   * @param onMessage {Function<Object>} Called to deliver a message
+   * @param onStateChange {Function<String>} Called to report that the
    *   connection has entered a new state: 'connected' (all is well
    *   and messages seem to be flowing), 'disconnected' (the
    *   connection has gone away, but we're continually retrying, for

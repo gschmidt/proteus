@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------------
+Collection: people
+-------------------------------------------------------------------------------
+
+* username, String
+  Proteus username
+
+* first_name, String
+* last_name, String
+
+* emails, List<String>
+  All email addresses known for this person. The first one is the
+  address to which correspondence should be addressed.
+
+* fbid, Integer
+  The Facebook unique identifier for the user
+
+* fb_token, String
+  The Facebook auth token for the user, if they've granted us access
