@@ -1,2 +1,5 @@
 node:
 node-v0.4.7, official release from nodejs.org
+
+mongodb-osx:
+mongodb-osx-x86_64-1.8.1, official build from mongodb.org
