@@ -39,7 +39,7 @@ ServerSession.methods({
    * return to the client.
    *
    * @param endpoint {String}
-   * @param handler {Function<Function<value>>}
+   * @param handler {Function<value,Function<value>>}
    */
   onRpc: function (endpoint, handler) {
     var self = this;

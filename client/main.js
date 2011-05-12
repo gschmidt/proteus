@@ -7,23 +7,32 @@ $(document).ready(function () {
   var lpc = LongPollClient.create();
   var conn = lpc.openConnection(ENVIRONMENT.connection);
   var sess = ClientSession.create(conn);
+  ENVIRONMENT.sess = sess;
 
   sess.subscribe('reload', function () {
     window.location.reload();
   });
 
-  sess.subscribe('message', function (message) {
-    $('body').append('message: ' + JSON.stringify(message) + '<br/>');
-  });
+  var pman = PeopleManager.create();
+  var drawPeopleList = function() {
+    var html = "<ul>";
+    pman.getPeopleMatching('').forEach(function (pid) {
+      var person = pman.getPerson(pid);
+      html += "<li>" + person.name + "</li>";
+    });
+    html += "</ul>";
+    $('#directory').html(html);
+  };
+  pman.onPeopleChanged(drawPeopleList);
+  drawPeopleList();
 
-  var message = $('<div />');
-  message.append("ya ha!!");
   var field = $('<input />').appendTo('body');
-  var button = $('<input type="button" value="send it?!" />');
+  var button = $('<input type="button" value="create by name" />');
   button.appendTo('body').click(function () {
-    $('body').append('you like it<br/>');
-    sess.rpc('message', field[0].value);
+    pman.createPerson({
+      name: field[0].value
+    });
   });
-  $('body').append(message);
+  $('<div id="directory"/>').appendTo('body');
 });
 

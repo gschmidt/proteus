@@ -22,6 +22,7 @@
 #require('/framework/lib/basics.js')
 #require('/framework/lib/LongPollServer.js')
 #require('/framework/lib/ServerSession.js')
+#require('/server/PeopleServer.js')
 
 var
   sys = require('sys'),
@@ -71,6 +72,8 @@ server_session.onRpc('message', function (m, reply) {
   server_session.post('message', "You said: " + m);
   reply(true);
 });
+
+PeopleServer.create(server_session);
 
 var startup = function () {
   http.createServer(function(req, res) {

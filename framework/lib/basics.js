@@ -101,8 +101,8 @@ var makeSymbol = function (name) {
 /// Return an id that is likely to be universally unique
 var __next_id_ha_ha_ha = 100;
 var genId = function () {
-  return "fake_" + __next_id_ha_ha_ha;
   __next_id_ha_ha_ha++;
+  return "fake_" + __next_id_ha_ha_ha;
 };
 
 /// Copy all of the keys from 'options' onto 'base'.
