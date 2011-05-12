@@ -1,0 +1,17 @@
+So what actually does happen if you disconnect for a day, and then
+reconnect? Surely we want to resume your session, but surely we don't
+want to send you every event that happened while you were gone and got
+queued up?
+
+Ensure connection is being kept alive
+
+We're going to need to figure out how to keep session cookies alive
+across server restarts!
+
+Yahoo claims that XHR POST uses 100 Continue in major browsers. If so,
+we need to change our stuff to use GET.
+
+When server crashes with an exception, do something reasonable. Like
+waiting for a code change?
+
+** Figure out what we're doing about preserving cookies across restarts **
