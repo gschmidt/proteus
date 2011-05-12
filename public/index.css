@@ -1,0 +1,90 @@
+/* empty */
+
+body {
+    background-color: white;
+    color: black;
+    font-family:"arial";
+}
+
+@font-face {
+    font-family:"harabara";
+    src:url(Harabara.ttf);
+    font-style:normal;
+}
+
+#header {
+    height: 60px;
+    background-color: #990000;
+    color: white;
+    border-style: none;
+    border-bottom-style: dashed;
+    border-width: 5px;
+    border-color: white;
+}
+
+#header .logo {
+    font-family: harabara;
+    font-size: 36px;
+    padding: 10px;
+}
+
+#header .search {
+    padding: 10px;
+    text-align: center;
+}
+
+#header .search em {
+    font-style: normal;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#header .search input {
+    height: 15px;
+    width: 300px;
+    padding-top: 9px;
+    font-size: 20px;
+}
+
+#directory {
+    position: relative;
+    height: 400px;
+    background-color: white;
+    color: black;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+    overflow-y:auto;
+    font-size: 20px;
+ }
+
+#directory-inner {
+    position: absolute;
+    width: 100%;
+}
+
+#header .account {
+    margin-top: 5px;
+    padding: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 10px;
+}
+
+li {
+    border-bottom-style: dashed;
+    border-color: gray;
+    border-width: 1px;
+    padding: 5px 20px;
+    text-align: left;
+    
+}

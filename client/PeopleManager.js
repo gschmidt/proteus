@@ -37,14 +37,42 @@ PeopleManager.methods({
   },
   /**
    * @param query {String} Partially typed name
-   * @return {List<String>} Id's of all people that could match, in
-   *   order of relevance
+   * @return {List<[String, String]>} All of the people that could
+   * match, in hopefully some kind of useful order. The first element
+   * in each pair is the id of the matching person. The second is
+   * their name with <em> tags inserted around the parts that matched
+   * the query.
    */
   getPeopleMatching: function (query) {
     var self = this;
     var ret = [];
-    for (p in self.people)
-      ret.push(p);
+
+    var qparts = query.split(/\s+/);
+    if (qparts.length === 0)
+      return [];
+    // TODO: escape/eliminate/ignore non-alphanumerics
+    var re = new RegExp();
+    var q = "^" + qparts.map(function (x) { return "(.*)\\b(" + x + ")";}).join('') +
+      "(.*)$";
+    re.compile(q, 'i');
+
+    for (id in self.people) {
+      var p = self.people[id];
+      var match = re.exec(p.name);
+      if (match) {
+        var decorated = "";
+        var i = 0;
+        match.forEach(function (s) {
+          i++;
+          if (i == 1) return;
+          if (i % 2 == 0)
+            decorated += s;
+          else
+            decorated += "<em>" + s + "</em>";
+        });
+        ret.push([id, decorated]);
+      }
+    }
     return ret; // super lame, of course
   },
   onPeopleChanged: function (cb) {

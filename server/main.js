@@ -34,6 +34,9 @@ var
   PORT = 4000,
   WEBROOT = path.join(project_root, 'public');
 
+// TODO: find a better place for these
+var CSS_FILES = ["reset.css", "grid.css", "index.css"];
+
 var long_poll_server = LongPollServer.create("/ev");
 var server_session = ServerSession.create();
 
@@ -42,16 +45,31 @@ if (!client_file_object)
   throw new Error("Can't find client/main.js");
 var client_code_errors = client_file_object.preflight();
 if (is_debug_mode) {
-  client_file_object.onDirty(function() {
+  // in debug mode, watch all of the resources that are sent to the
+  // client, and send the client a reload messages if they've changed
+  var endTheWorld = function() {
+    console.log("**** Client sources changed; sending reload to client ****");
     server_session.post('reload');
     // TODO: this sucks. we should restart immediately, and *then*
     // tell the clients? somehow?
     // TODO: this actually doesn't work at all. the client restarts,
     // gets a new cookie, and then the server immediately restarts,
     // invalidating the cookie
-    setTimeout(restart, 3*1000);
+    // TODO: actually this sucks, it means the old code gets reloaded
+    setTimeout(restart, 1*1000);
+  };
+
+  // this gets all the javascript
+  client_file_object.onDirty(endTheWorld);
+
+  // css isn't currently handled by the bundler, so we have to do it
+  // manually
+  CSS_FILES.forEach(function (f) {
+    var fullpath = path.join(WEBROOT, f);
+    onPathDirty(fullpath, endTheWorld);
   });
 }
+
 if (client_code_errors.length > 0) {
   // TODO: It would be nice to have a unified error display for client
   // and server code. This will require not thinking about the path to
@@ -67,11 +85,6 @@ if (client_code_errors.length > 0) {
 } else {
   client_bundle = client_file_object.getBundle('/bundle');
 }
-
-server_session.onRpc('message', function (m, reply) {
-  server_session.post('message', "You said: " + m);
-  reply(true);
-});
 
 PeopleServer.create(server_session);
 
@@ -98,7 +111,11 @@ var startup = function () {
         return '<script src="' + path + '"></script>';
       }).join('');
 
-      var page = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head>' + env_setup + script_includes + '</head><body></body></html>';
+      var css_includes = CSS_FILES.map(function (path) {
+        return '<link href="' + path + '" rel="stylesheet" type="text/css">';
+      }).join('');
+
+      var page = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head>' + env_setup + css_includes + script_includes + '</head><body></body></html>';
 
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(page);

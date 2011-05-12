@@ -132,7 +132,6 @@ InboundConnection.methods({
     self.receive_queue = [];
   },
   send: function (message) {
-    require('sys').log('queueing a message: ' + message);
     // TODO: impose maximum outgoing buffer length
     var self = this;
     self.send_queue.push(message);
@@ -144,9 +143,7 @@ InboundConnection.methods({
   },
   _flush_send: function () {
     var self = this;
-    require('sys').log('_flush_send runs');
     if (self.pending_response) {
-      require('sys').log('_flush_send has a pending response');
       self.pending_response.writeHead(200, {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
@@ -159,8 +156,6 @@ InboundConnection.methods({
       clearTimeout(self.pending_response_timeout);
       self.pending_response_timeout = null;
     }
-    else
-      require('sys').log('_flush_send has to wait');
   },
   setDeathTime: function (timeout_secs) {
     UNIMPLEMENTED();

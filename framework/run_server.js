@@ -531,7 +531,6 @@
         var path = path_prefix + "/" + n._cutepath + "?" + digest.substr(0, 6);
         ret.paths.push(path);
         ret.data[path] = n._js;
-        console.log("saved data for "+path);
       }
 
       traverse(self);
@@ -605,6 +604,16 @@
   };
   File._all_files = {};
 
+  /**** A little helper/hack, for getting automatic CSS reloading ****/
+
+  var onPathDirty = function (fullpath, callback) {
+    var origHash = fileHash(fullpath);
+    fs.watchFile(fullpath, {interval: 1}, function () {
+      if (origHash !== fileHash(fullpath))
+        callback();
+    });
+  };
+
   /**** The context in which the app code will run ****/
 
   // the context (global object) for the actual application code
@@ -614,6 +623,7 @@
     setTimeout: setTimeout,
     clearTimeout: clearTimeout,
     getFileObject: File.findOrCreate, // TODO: move someplace reasonable
+    onPathDirty: onPathDirty, // TODO: eliminate weird hack
     project_root: project_root, // TODO: rename! for serious
     is_debug_mode: is_debug_mode, // ditto
     restart: function () {restart();}, // ditto ditto, plus it's ugly

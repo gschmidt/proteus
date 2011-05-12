@@ -54,11 +54,8 @@ ServerSession.methods({
    * @param message {} Arbitrary JSON-compatible value
    */
   post: function (topic, message) {
-    require('sys').log('post ' + message + ' to ' + topic);
     var self = this;
     var subs = self.subs[topic];
-    require('sys').log('there are ' + subs.length + ' subs here');
-    require('sys').log('subs is ' + subs);
     if (subs) {
       for (connId in subs) {
         require('sys').log('there goes a sub, to connid ' + connId);
