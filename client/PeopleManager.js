@@ -4,26 +4,27 @@ PeopleManager = Class('PeopleManager');
 
 // XXX Probably need a generic observer pattern.
 
+PeopleManager.events("changed");
+
 PeopleManager.constructor(function (_super) {
   _super();
   var self = this;
   self.people = {};
   self.sess = ENVIRONMENT.sess;
-  self.callbacks = [];
   // XXX this is all lame and fake
   self.sess.rpc('people/all', null, function (people) {
     people.forEach(function (p) {
       self.people[p._id] = p;
     });
-    self._notify();
+    self.fire("changed");
   });
   self.sess.subscribe('people/new', function (person) {
     self.people[person._id] = person;
-    self._notify();
+    self.fire("changed");
   });
   self.sess.subscribe('people/delete', function (person) {
     delete self.people[id];
-    self._notify();
+    self.fire("changed");
   });
 });
 
@@ -92,17 +93,6 @@ PeopleManager.methods({
       ret.push([id, results[id]]);
     return ret;
   },
-  onPeopleChanged: function (cb) {
-    var self = this;
-    // XXX breaks GC, very bad. I think?
-    self.callbacks.push(cb);
-  },
-  _notify: function() {
-    var self = this;
-    self.callbacks.forEach(function (cb) {
-      cb();
-    });
-  },
 
   /**
    * Create a new person (durably, on the server)
@@ -121,7 +111,7 @@ PeopleManager.methods({
     person._id = genId();
     self.people[person._id] = person;
     self.sess.rpc('people/new', person);
-    self._notify();
+    self.fire("changed");
     return person._id;
   },
 
@@ -134,7 +124,7 @@ PeopleManager.methods({
     var self = this;
     delete self.people[id];
     self.sess.rpc('people/delete', id);
-    self._notify();
+    self.fire("changed");
   }
 
 });

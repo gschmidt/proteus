@@ -42,8 +42,6 @@ ClientSession.methods({
    * topics are reliable and sequenced, or at least as much as
    * anything is in this crazy world.
    *
-   * XXX rename 'on'?
-   *
    * @param topic {String} Name of the topic to subscribe to
    * @param callback {Function} Function that will be called when a
    *   message arrives on the topic (with a single argument: the

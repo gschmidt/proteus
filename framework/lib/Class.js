@@ -10,6 +10,10 @@
 // methods). maybe privateConstructor() instead of constructor, and
 // then you must call _create() instead of create()?
 
+// TODO: provide a test for events
+
+// TODO: figure out how we expect GC to work with events
+
 /**
  * Usage:
  *
@@ -22,6 +26,7 @@
  *  _super();
  *  this.some_property = some_arg;
  * });
+ * MyClass.events("foohappened", "barhappened");
  *
  * MyDerivedClass = Class('MyDerivedClass', MyClass);
  * MyDerivedClass.methods({
@@ -35,6 +40,9 @@
  * my_instance = MyDerivedClass.create(foo, bar);
  * my_instance instanceof MyDerivedClass => true
  * my_instance instanceof MyClass => true
+ *
+ * my_instance.on("foohappened", function (arg1, arg2, arg3) {..} );
+ * my_instance.fire("foohappened", arg1, arg2, arg3) => undefined
  *
  * MyClass.create(something) => exception (abstract because of
  *   doSomethingSpecificToSubclass)
@@ -54,6 +62,16 @@
  * rather than a function, to specify an abstract method that must be
  * overridden in a subclass in order for it to be legal to construct
  * the subclass.
+ *
+ * Events are optional. Events that will listened to by on() or fired
+ * by fire() must first be declared on the class with events(). Events
+ * may be declared multiple times; the lists are merged. Child classes
+ * inherit all of their superclasses's events. The return value of
+ * event handler functions is ignored. As a convenience, events are
+ * called with 'this' set to the object on which the event is
+ * registered. If a class has no events, then its instances will not
+ * have on() or fire() methods -- so, you could think of events() as
+ * an easy means of declaring on() and fire().
  *
  * There is no explicit support for inherited properties. Instead, set
  * any desired properties in your constructors.
@@ -100,6 +118,8 @@ Class = function(name, opt_superclass) {
   klass._has_subclasses = false;
   klass._has_instances = false;
   klass._abstract_method_count = 0;
+  klass._events = {};
+  klass._event_methods_created = false;
   // In this and other functions, we break out arg0..arg9 because we
   // believe that working with 'arguments' is really slow in
   // current-generation VMs.
@@ -143,6 +163,9 @@ Class = function(name, opt_superclass) {
     f.prototype = klass.superclass.prototype;
     klass.prototype = new f();
     klass.prototype.constructor = klass;
+    // event inheritance
+    for (e in klass.superclass)
+      klass._events[e] = true;
   }
 
   klass.methods = function(obj) {
@@ -175,6 +198,48 @@ Class = function(name, opt_superclass) {
     }
   };
 
+  klass.events = function () {
+    var idx;
+    if (klass._has_subclasses)
+      throw new Error("May not add events to a class once that class has " +
+                      "child classes"); // could lift if necessary
+    if (arguments.length === 0)
+      return; // avoid creating event methods
+    for (idx = 0; idx < arguments.length; idx++)
+      klass._events[arguments[idx]] = true;
+    if (!klass._event_methods_created) {
+      klass.prototype.on = function (event, func) {
+        var array = this.__event_listeners[event];
+        if (!array) {
+          if (!(event in klass._events))
+            throw new Error("Class " + klass.classname + " does not have " +
+                            "an event called '" + event + "'");
+          this.__event_listeners[event] = array = [];
+        }
+        array.push(func);
+      };
+      klass.prototype.fire =
+        function (event, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+                  arg8, arg9, sentinel) {
+          if (undefined !== sentinel)
+            throw new Error("Too many arguments to " + klass.classname +
+                            ".fire(" + event + "). Edit Class.js to " +
+                            "lift this implementation limit.");
+          var array = this.__event_listeners[event];
+          if (!array) {
+            if (!(event in klass._events))
+              throw new Error("Class " + klass.classname + " does not have " +
+                              "an event called '" + event + "'");
+          } else
+            array.forEach(function (f) {
+              f.call(this, arg0, arg1, arg2, arg3, arg4, arg5, arg6,
+                     arg7, arg8, arg9);
+            });
+        }
+      klass._event_methods_created = true;
+    }
+  };
+
   klass.constructor = function(ctor) {
     if (klass._has_ctor)
       throw new Error('A constructor has already been defined for class ' +
@@ -197,6 +262,7 @@ Class = function(name, opt_superclass) {
     var f = function() {};
     f.prototype = klass.prototype;
     var obj = new f();
+    obj.__event_listeners = {};
 
     klass._construct(obj, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
                      arg8, arg9);

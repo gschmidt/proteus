@@ -113,7 +113,7 @@ $(document).ready(function () {
     eltForSelection().addClass('selected');
   };
 
-  pman.onPeopleChanged(drawPeopleList.bind(null, true));
+  pman.on("changed", drawPeopleList.bind(null, true));
   // somewhere, should register to yank you out of a person's screen
   // if they get deleted? (like that'll ever happen, though..)
 
