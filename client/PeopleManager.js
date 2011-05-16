@@ -23,7 +23,7 @@ PeopleManager.constructor(function (_super) {
     self.fire("changed");
   });
   self.sess.subscribe('people/delete', function (person) {
-    delete self.people[id];
+    delete self.people[person.id];
     self.fire("changed");
   });
 });
@@ -64,7 +64,7 @@ PeopleManager.methods({
       var q = "^" + qparts.map(function (x) { return "(.*)\\b(" + x + ")";}).join('') +
         "(.*)$";
       re.compile(q, 'i');
-      for (id in self.people) {
+      for (var id in self.people) {
         var p = self.people[id];
         var match = re.exec(p.name);
         if (match) {
@@ -89,7 +89,7 @@ PeopleManager.methods({
     query = query.replace(/\s/,'');
     tryQuery(query.split(''));
 
-    for (id in results)
+    for (var id in results)
       ret.push([id, results[id]]);
     return ret;
   },

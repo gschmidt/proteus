@@ -57,7 +57,7 @@ ServerSession.methods({
     var self = this;
     var subs = self.subs[topic];
     if (subs) {
-      for (connId in subs) {
+      for (var connId in subs) {
         require('sys').log('there goes a sub, to connid ' + connId);
         self.conns[connId].send([topic, message]);
       }

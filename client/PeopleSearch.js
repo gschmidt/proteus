@@ -1,3 +1,4 @@
+#require('/framework/lib/Class.js')
 
 PeopleSearch = Class("PeopleSearch");
 

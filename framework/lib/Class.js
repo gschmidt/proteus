@@ -164,7 +164,7 @@ Class = function(name, opt_superclass) {
     klass.prototype = new f();
     klass.prototype.constructor = klass;
     // event inheritance
-    for (e in klass.superclass)
+    for (var e in klass.superclass)
       klass._events[e] = true;
   }
 
@@ -176,7 +176,7 @@ Class = function(name, opt_superclass) {
       throw new Error("May not add methods to a class once that class has " +
                       "been instantiated"); // eg, abstract methods
 
-    for (key in obj) {
+    for (var key in obj) {
       if (klass.prototype.hasOwnProperty(key))
         throw new Error('Class ' + klass.classname + ' already has a method ' +
                         key);
@@ -205,7 +205,7 @@ Class = function(name, opt_superclass) {
                       "child classes"); // could lift if necessary
     if (arguments.length === 0)
       return; // avoid creating event methods
-    for (idx = 0; idx < arguments.length; idx++)
+    for (var idx = 0; idx < arguments.length; idx++)
       klass._events[arguments[idx]] = true;
     if (!klass._event_methods_created) {
       klass.prototype.on = function (event, func) {

@@ -8,7 +8,7 @@ if (!Array.prototype.map) {
   Array.prototype.map = function (f) {
     var len = this.length;
     var ret = new Array(len);
-    for (i = 0; i < len; i++)
+    for (var i = 0; i < len; i++)
       ret[i] = f(this[i]);
     return ret;
   };
@@ -85,7 +85,7 @@ if (!Array.prototype.indexOf)
  */
 var mapProperties = function (obj, f) {
   var ret = [];
-  for (prop in obj) {
+  for (var prop in obj) {
     if (obj.hasOwnProperty(prop))
       ret.push(f(prop, obj[prop]));
   }
@@ -115,13 +115,12 @@ var genId = function () {
   key += Math.random() + "#";
   key += Math.random() + "#";
   var id = MD5(key);
-  console.log(id);
   return id;
 };
 
 /// Copy all of the keys from 'options' onto 'base'.
 var extend = function(base, options) {
-  for (key in options)
+  for (var key in options)
     base[key] = options[key];
   return base;
 };
