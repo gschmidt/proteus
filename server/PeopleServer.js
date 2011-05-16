@@ -47,6 +47,12 @@ PeopleServer.constructor(function (_super, server_session) {
     self.sess.post('people/new', person);
     reply(true);
   });
+
+  self.sess.onRpc('people/delete', function (id, reply) {
+    var ret = PEOPLE.remove({_id: id}); // XXX should probably check for errors
+    self.sess.post('people/delete', id);
+    reply(true);
+  });
 });
 
 

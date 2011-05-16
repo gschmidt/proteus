@@ -12,11 +12,17 @@ PeopleManager.constructor(function (_super) {
   self.callbacks = [];
   // XXX this is all lame and fake
   self.sess.rpc('people/all', null, function (people) {
-    extend(self.people, people);
+    people.forEach(function (p) {
+      self.people[p._id] = p;
+    });
     self._notify();
   });
   self.sess.subscribe('people/new', function (person) {
-    self.people[person.id] = person;
+    self.people[person._id] = person;
+    self._notify();
+  });
+  self.sess.subscribe('people/delete', function (person) {
+    delete self.people[id];
     self._notify();
   });
 });
@@ -31,8 +37,7 @@ PeopleManager.methods({
     if (id in self.people)
       return self.people[id];
     else return {
-      id: id,
-      name: "Mr. " + id
+      _id: id
     };
   },
   /**
@@ -45,35 +50,47 @@ PeopleManager.methods({
    */
   getPeopleMatching: function (query) {
     var self = this;
+    var results = {}; // id => em'd string
     var ret = [];
 
-    var qparts = query.split(/\s+/);
-    if (qparts.length === 0)
-      return [];
-    // TODO: escape/eliminate/ignore non-alphanumerics
-    var re = new RegExp();
-    var q = "^" + qparts.map(function (x) { return "(.*)\\b(" + x + ")";}).join('') +
-      "(.*)$";
-    re.compile(q, 'i');
+    // TODO: ignore non-alphanumerics
+    query = query.replace(/[^a-zA-Z\s]/,'');
 
-    for (id in self.people) {
-      var p = self.people[id];
-      var match = re.exec(p.name);
-      if (match) {
-        var decorated = "";
-        var i = 0;
-        match.forEach(function (s) {
-          i++;
-          if (i == 1) return;
-          if (i % 2 == 0)
-            decorated += s;
-          else
-            decorated += "<em>" + s + "</em>";
-        });
-        ret.push([id, decorated]);
+    var tryQuery = function (qparts) {
+      if (qparts.length === 0)
+        return;
+      var re = new RegExp();
+      var q = "^" + qparts.map(function (x) { return "(.*)\\b(" + x + ")";}).join('') +
+        "(.*)$";
+      re.compile(q, 'i');
+      for (id in self.people) {
+        var p = self.people[id];
+        var match = re.exec(p.name);
+        if (match) {
+          var decorated = "";
+          var i = 0;
+          match.forEach(function (s) {
+            i++;
+            if (i == 1) return;
+            if (i % 2 == 0)
+              decorated += s;
+            else
+              decorated += "<em>" + s + "</em>";
+          });
+          results[id] = decorated;
+        }
       }
     }
-    return ret; // super lame, of course
+
+    // try first as prefixes, then as initials. let initials matches
+    // take precedence when highlighting.
+    tryQuery(query.split(/\s+/));
+    query = query.replace(/\s/,'');
+    tryQuery(query.split(''));
+
+    for (id in results)
+      ret.push([id, results[id]]);
+    return ret;
   },
   onPeopleChanged: function (cb) {
     var self = this;
@@ -96,13 +113,28 @@ PeopleManager.methods({
    * stuff wasn't saved" mechanism)
    *
    * @param options {Object} Attributes for the new person
+   * @return {String} the id of the created person
    */
   createPerson: function (options) {
     var self = this;
     var person = extend({}, options);
-    person.id = genId();
-    self.people[person.id] = person;
+    person._id = genId();
+    self.people[person._id] = person;
     self.sess.rpc('people/new', person);
     self._notify();
+    return person._id;
+  },
+
+  /**
+   * Permanently delete a person.
+   *
+   * @param id {String} The person to delete
+   */
+  deletePerson: function (id) {
+    var self = this;
+    delete self.people[id];
+    self.sess.rpc('people/delete', id);
+    self._notify();
   }
+
 });

@@ -84,7 +84,15 @@ li {
     border-bottom-style: dashed;
     border-color: gray;
     border-width: 1px;
-    padding: 5px 20px;
+    padding: 5px 20px;i
     text-align: left;
-    
+}
+
+li.create-new-person {
+    font-size: 15px;
+    font-style: italic;
+}
+
+li.selected {
+    background-color: #ccc;
 }

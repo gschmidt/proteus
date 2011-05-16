@@ -1,3 +1,5 @@
+#require('/framework/lib/md5.js')
+
 UNIMPLEMENTED = function () {
   throw new Error("Unimplemented");
 };
@@ -98,11 +100,23 @@ var makeSymbol = function (name) {
 };
 
 
-/// Return an id that is likely to be universally unique
-var __next_id_ha_ha_ha = 100;
+/// Return an id that is likely to be universally unique. This is
+/// definitely not the way to get a compact id, but it'll do for now.
+///
+/// XXX find a way to generate more compact ids. either have the
+/// client generate temporary ids and keep an alias table for the
+/// duration of the session (based on the actual id the server
+/// picked), or have the server allocate blocks of id space to us
+var __genId_counter = 0;
 var genId = function () {
-  __next_id_ha_ha_ha++;
-  return "fake_" + __next_id_ha_ha_ha;
+  var key = (__genId_counter++) + "#";
+  key += (new Date()).getTime() + "#";
+  key += Math.random() + "#";
+  key += Math.random() + "#";
+  key += Math.random() + "#";
+  var id = MD5(key);
+  console.log(id);
+  return id;
 };
 
 /// Copy all of the keys from 'options' onto 'base'.
