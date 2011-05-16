@@ -221,18 +221,19 @@ Class = function(name, opt_superclass) {
       klass.prototype.fire =
         function (event, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
                   arg8, arg9, sentinel) {
+          var self = this;
           if (undefined !== sentinel)
             throw new Error("Too many arguments to " + klass.classname +
                             ".fire(" + event + "). Edit Class.js to " +
                             "lift this implementation limit.");
-          var array = this.__event_listeners[event];
+          var array = self.__event_listeners[event];
           if (!array) {
             if (!(event in klass._events))
               throw new Error("Class " + klass.classname + " does not have " +
                               "an event called '" + event + "'");
           } else
             array.forEach(function (f) {
-              f.call(this, arg0, arg1, arg2, arg3, arg4, arg5, arg6,
+              f.call(self, arg0, arg1, arg2, arg3, arg4, arg5, arg6,
                      arg7, arg8, arg9);
             });
         }
