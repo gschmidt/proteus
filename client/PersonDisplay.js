@@ -28,6 +28,11 @@ PersonDisplay.methods({
     }
     var person = self.pman.getPerson(self.selected);
     $(self.root).html("<h1>" + person.name + "</h1>"); // XXX escaping
+    if (person.fbid) {
+      var img = $('<img>');
+      img[0].src = "http://graph.facebook.com/" + person.fbid + "/picture?type=large";
+      img.appendTo(self.root);
+    }
     var del = $("<input type='button' value='Delete'>");
     $(self.root).append(del);
     var was_selected = self.selected; // small precaution -- close
