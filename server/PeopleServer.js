@@ -34,6 +34,17 @@ PeopleServer.constructor(function (_super, server_session, mongo) {
       reply(true);
     });
   });
+
+  self.sess.onRpc('people/update', function (env, details, reply) {
+    self.mongo.collection('people', function(err, people) {
+      var id = details.id;
+      delete details[id];
+      people.update({_id: id}, {$set: details});
+      details[id] = id;
+      self.sess.post('people/update', details); // XXX error checking, etc..
+      reply(true);
+    });
+  });
 });
 
 

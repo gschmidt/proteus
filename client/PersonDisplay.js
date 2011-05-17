@@ -37,5 +37,13 @@ PersonDisplay.methods({
       if (conf)
         self.pman.deletePerson(was_selected);
     });
+
+    $("<h2>Facebook id</h2>").appendTo(self.root);
+    var idinput = $("<input type='text'>").appendTo(self.root);
+    idinput.val(person.fbid || '');
+    var save = $("<input type='button' value='Save'>").appendTo(self.root);
+    save.click(function () {
+      self.pman.updatePerson({id: self.selected, fbid: idinput.val()});
+    });
   }
 });

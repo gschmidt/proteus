@@ -8,7 +8,6 @@ LoginStatusView.constructor(function (_super, container) {
   self.container = container;
   self.fbdata = {};
   FB.api('/me', function (resp) {
-    console.log(resp);
     self.fbdata = resp;
     self._update();
   });

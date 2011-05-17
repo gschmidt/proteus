@@ -23,6 +23,7 @@
 #require('/framework/lib/LongPollServer.js')
 #require('/framework/lib/ServerSession.js')
 #require('/server/PeopleServer.js')
+#require('/server/LoginServer.js')
 
 var
   sys = require('sys'),
@@ -202,6 +203,7 @@ var startHttp = function () {
 var startup = function () {
   startMongo(function (mongo) {
     PeopleServer.create(server_session, mongo);
+    LoginServer.create(server_session, mongo);
     startHttp();
   });
 };

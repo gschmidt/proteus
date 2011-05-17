@@ -54,6 +54,16 @@ $(document).ready(function () {
       if (resp.session) {
         // already logged in
         MainScreen.create(approot[0]);
+        // XXX testing -- need to do this on all paths, obviously
+        // (actually, it's that we need to not drive the screen
+        // transition on FB login as opposed to Proteus login)
+        sess.rpc('login/login', {
+          method: "fb",
+          fbid: resp.session.uid,
+          access_token: resp.session.access_token
+        }, function (x) {
+          console.log("Result of proteus login is: " + x);
+        });
       } else {
         var login = LoginScreen.create(approot[0]);
         login.on("loggedin", function () {

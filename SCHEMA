@@ -13,7 +13,9 @@ Collection: people
   address to which correspondence should be addressed.
 
 * fbid, String
-  The Facebook unique identifier for the user
+  The Facebook unique identifier for the user. We keep these as
+  strings instead of integers because this is also how Facebook sends
+  them to us in JSON.
 
 * fb_token, String
   The Facebook auth token for the user, if they've granted us access

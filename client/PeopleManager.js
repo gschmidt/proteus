@@ -26,6 +26,12 @@ PeopleManager.constructor(function (_super) {
     delete self.people[person.id];
     self.fire("changed");
   });
+  self.sess.subscribe('people/update', function (details) {
+    var person = self.people[details.id];
+    if (person)
+      extend(person, details);
+    self.fire("changed");
+  });
 });
 
 PeopleManager.methods({
@@ -124,6 +130,22 @@ PeopleManager.methods({
     var self = this;
     delete self.people[id];
     self.sess.rpc('people/delete', id);
+    self.fire("changed");
+  },
+
+  /**
+   * Update a person record. 'details' should include id, plus any
+   * keys you want to change.
+   *
+   * @param details {Object}
+   */
+  updatePerson: function (details) {
+    var self = this;
+    var person = self.people[details.id];
+    if (!person)
+      return;
+    extend(person, details);
+    self.sess.rpc('people/update', details);
     self.fire("changed");
   }
 
