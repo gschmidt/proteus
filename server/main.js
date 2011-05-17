@@ -86,9 +86,35 @@ if (client_code_errors.length > 0) {
   client_bundle = client_file_object.getBundle('/bundle');
 }
 
-PeopleServer.create(server_session);
+// Bring up Mongo, and when that's done, call 'callback' with one
+// argument, the Mongo database handle.
+var startMongo = function (callback) {
+  var db = require('../3rdparty/node-mongodb-native/lib/mongodb').Db;
+  var server = require('../3rdparty/node-mongodb-native/lib/mongodb').Server;
 
-var startup = function () {
+  // XXX pull out config information
+  var mongo = new db('proteus', new server("127.0.0.1", 27017, {}), {});
+  if (false) {
+    // XXX make this work
+    var BSON = require("../external-libs/bson/bson");
+    mongo.bson_deserializer = BSON;
+    mongo.bson_serializer = BSON;
+    mongo.pkFactory = BSON.ObjectID;
+  } else {
+    var BSONJS = require('../3rdparty/node-mongodb-native/lib/mongodb/bson/bson');
+    mongo.bson_deserializer = BSONJS;
+    mongo.bson_serializer = BSONJS;
+    mongo.pkFactory = BSONJS.ObjectID;
+  }
+  mongo.open(function(err, mongo) {
+    // XXX handle error
+    callback(mongo);
+  });
+};
+
+// Bring up the HTTP server and start accepting requests (both for
+// RPC/event subscrption channel and static resources)
+var startHttp = function () {
   http.createServer(function(req, res) {
     var url = require('url');
     var pathname = url.parse(req.url).pathname || '';
@@ -148,6 +174,13 @@ var startup = function () {
       return;
     }
 
+    var log_http = function(statCode, url, ip, err) {
+      var logStr = statCode + ' - ' + url + ' - ' + ip;
+      if (err)
+        logStr += ' - ' + err;
+      sys.log(logStr);
+    };
+
     var ip = req.connection.remoteAddress;
     paperboy
       .deliver(WEBROOT, req, res)
@@ -156,22 +189,22 @@ var startup = function () {
         sys.log('Received Request');
       })
       .after(function(statCode) {
-        log(statCode, req.url, ip);
+        log_http(statCode, req.url, ip);
       })
       .error(function(statCode, msg) {
         res.writeHead(statCode, {'Content-Type': 'text/plain'});
         res.end("Error " + statCode);
-        log(statCode, req.url, ip, msg);
+        log_http(statCode, req.url, ip, msg);
       });
   }).listen(PORT);
-}
+};
 
-function log(statCode, url, ip, err) {
-  var logStr = statCode + ' - ' + url + ' - ' + ip;
-  if (err)
-    logStr += ' - ' + err;
-  sys.log(logStr);
-}
+var startup = function () {
+  startMongo(function (mongo) {
+    PeopleServer.create(server_session, mongo);
+    startHttp();
+  });
+};
 
 if (client_bundle !== null)
   startup();

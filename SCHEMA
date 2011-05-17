@@ -12,7 +12,7 @@ Collection: people
   All email addresses known for this person. The first one is the
   address to which correspondence should be addressed.
 
-* fbid, Integer
+* fbid, String
   The Facebook unique identifier for the user
 
 * fb_token, String

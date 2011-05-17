@@ -3,9 +3,28 @@
 #require('/client/PeopleManager.js')
 #require('/client/PeopleSearch.js')
 #require('/client/PersonDisplay.js')
+#require('/client/MainScreen.js')
+#require('/client/LoginScreen.js')
 #require('/client/jquery-1.6.js')
 
 $(document).ready(function () {
+  /// Facebook stuff ///
+  // FB requires a 'fb-root' div to exist
+  var fbroot = document.createElement('div');
+  fbroot.id = "fb-root";
+  document.body.appendChild(fbroot);
+
+  var fbscript = document.createElement('script');
+  fbscript.async = true;
+  fbscript.src = document.location.protocol +
+    '//connect.facebook.net/en_US/all.js';
+  fbroot.appendChild(fbscript);
+  // When Facebook is ready, it will call window.fbAsyncInit
+
+  /// rest of app ///
+
+  // XXX we're going to need to defer this until after we're logged
+  // in..
   var lpc = LongPollClient.create();
   var conn = lpc.openConnection(ENVIRONMENT.connection);
   /// TODO: find a better way to manage singletons/dependencies
@@ -18,34 +37,33 @@ $(document).ready(function () {
     window.location.reload();
   });
 
-  var header = $('<div id="header" />').appendTo('body');
-  header.html('<div class="row"><div class="column grid_3"><div class="logo">Monument</div></div><div class="column grid_6"><div class="search"> </div></div><div class="column grid_3"><div class="account">You\'re logged in as you</div></div></div>');
-
-  var profile = $('<div id="profile"></div>').appendTo('body');
-
-  var psearch = PeopleSearch.create($('#header .search')[0]);
-  var pdisplay = PersonDisplay.create($('#profile')[0]);
-
-  psearch.on("select", function (id) {
-    pdisplay.switchToPerson(id);
-  });
-
-  psearch.on("new", function (name) {
-    var id = pman.createPerson({
-      name: name
+  window.fbAsyncInit = function () {
+    FB.init({
+      // XXX move to environment? definitely condition on prod vs
+      // debug
+      appId: 120418858040881,
+      status: true,
+      cookie: true,
+      xfmbl: true
     });
-    // XXX: Hack. Change contract so that new is a 'hook' (eg, can
-    // return a value), and specify that select fires after new.
-    this.fire("select", id);
-  });
 
-  // somewhere, should register to yank you out of a person's screen
-  // if they get deleted? (like that'll ever happen, though..)
-  $('body').keydown(function (evt) {
-    if (evt.which === 27)  {// esc
-      psearch.clearSearch();
-      psearch.focus();
-    }
-  });
+    var approot = $('<div>');
+    approot.appendTo('body');
+
+    FB.getLoginStatus(function (resp) {
+      if (resp.session) {
+        // already logged in
+        MainScreen.create(approot[0]);
+      } else {
+        var login = LoginScreen.create(approot[0]);
+        login.on("loggedin", function () {
+          // XXX an example of a memory leak: we need to destroy LoginScreen somehow..
+          MainScreen.create(approot[0]);
+        });
+      }
+    });
+
+  };
+
 });
 
