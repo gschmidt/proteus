@@ -18,6 +18,11 @@
 // XXX find a place to document the contract for *View classes -- they
 // should have an attribute named 'element'
 
+// XXX make it possible to sent event handlers by passing
+// pseudo-attributes. this is tricky, because we still want jQuery's
+// special cross-browser event handling help (whatever that is
+// exactly), but we don't want to depend on jQuery.
+
 // All HTML4 elements, excluding deprecated element
 // http://www.w3.org/TR/html4/index/elements.html
 // also excluding the following elements that seem unlikely to be used in the body:

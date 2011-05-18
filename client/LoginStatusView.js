@@ -26,18 +26,18 @@ LoginStatusView.methods({
     var self = this;
     $(self.element).empty();
 
-/*
-    var img = $("<img>");
-    img[0].src = "http://graph.facebook.com/" + self.fbdata.id + "/picture?type=square";
-    $(img).appendTo(self.element);
-*/
-    $("<div>").text(self.fbdata.name).
-      appendTo(self.element);
-    $("<a>").text("Log out").click(function () {
+    var logout = A(["Log out"]);
+    $(logout).click(function () {
       FB.logout(function (resp) {
         document.location = "/";
       });
-    }).appendTo(self.element);
+    });
 
+    self.element.appendChild(
+      DIV([
+        DIV([self.fbdata.name]),
+        logout
+      ])
+    );
   }
 });

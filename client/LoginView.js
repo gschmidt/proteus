@@ -14,8 +14,10 @@ LoginView.constructor(function (_super) {
   var self = this;
   self.element = DIV();
 
-  var d = $('<input type="button" value="Log in with Facebook">');
-  d.click(function () {
+  var fb_button =
+    INPUT({type: "button",
+           value: "Log in with Facebook"});
+  $(fb_button).click(function () {
     // XXX defer until window.fbAsyncInit has fired
     FB.login(function (resp) {
       if (resp.session) {
@@ -27,5 +29,6 @@ LoginView.constructor(function (_super) {
       perms:'email,offline_access'
     });
   });
-  d.appendTo(self.element);
+
+  self.element.appendChild(fb_button);
 });

@@ -16,40 +16,45 @@ PersonView.methods({
   switchToPerson: function (id) {
     var self = this;
     self.selected = id;
-    $(self.element).empty();
     self._repopulate();
   },
 
   _repopulate: function () {
     var self = this;
+
+    $(self.element).empty();
     if (!self.selected) {
-      $(self.element).html("Nobody selected");
+      self.element.appendChild(
+        SPAN(["Nobody selected"]));
       return;
     }
+
     var person = self.pman.getPerson(self.selected);
-    $(self.element).html("<h1>" + person.name + "</h1>"); // XXX escaping
-    if (person.fbid) {
-      var img = IMG({
-        src: "http://graph.facebook.com/" + person.fbid + "/picture?type=large"
-      });
-      $(img).appendTo(self.element);
-    }
-    var del = $("<input type='button' value='Delete'>");
-    $(self.element).append(del);
     var was_selected = self.selected; // small precaution -- close
                                       // button over current selection
-    del.click(function () {
+    var del = INPUT({type: "button", value: "Delete"});
+    $(del).click(function () {
       var conf = confirm("Really delete this person? There is no undo!");
       if (conf)
         self.pman.deletePerson(was_selected);
     });
 
-    $("<h2>Facebook id</h2>").appendTo(self.element);
-    var idinput = $("<input type='text'>").appendTo(self.element);
-    idinput.val(person.fbid || '');
-    var save = $("<input type='button' value='Save'>").appendTo(self.element);
-    save.click(function () {
+    var save = INPUT({type: "button", value: "Save"});
+    $(save).click(function () {
       self.pman.updatePerson({id: self.selected, fbid: idinput.val()});
     });
+
+    var doc = DIV([
+      H1([person.name]),
+      del,
+      person.fbid ?
+        IMG({src: "http://graph.facebook.com/" +
+             person.fbid + "/picture?type=large"}) :
+        [],
+      H2(["Facebook id"]),
+      INPUT({type: "text", value: person.fbid || ''}),
+      save
+    ]);
+    self.element.appendChild(doc);
   }
 });
