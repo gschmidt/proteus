@@ -32,7 +32,7 @@ var
   url = require('url'),
   paperboy = require('../3rdparty/paperboy'),
 
-  PORT = 4000,
+  PORT = 5000,
   WEBROOT = path.join(project_root, 'public');
 
 // TODO: find a better place for these

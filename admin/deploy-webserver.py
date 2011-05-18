@@ -10,7 +10,7 @@
 import os
 from subprocess import call, check_call
 
-os.chdir(os.path.join(os.getenv('HOME'), 'blasphemy'))
+os.chdir(os.path.join(os.getenv('HOME'), 'proteus'))
 try:
     call(['admin/run-prod.py', 'stop'])
 except OSError:
