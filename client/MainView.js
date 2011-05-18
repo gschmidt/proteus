@@ -4,20 +4,17 @@
 #require('/client/PeopleSearchView.js')
 #require('/client/PersonDisplay.js')
 
-MainScreen = Class("MainScreen");
+MainView = Class("MainView");
 
 /**
  * The main application screen -- shown all of the time, except when
  * the user is not logged in.
- *
- * @param container {element} The children of this element will be
- *   overwritten with MainScreen
  */
-MainScreen.constructor(function (_super, container) {
+MainView.constructor(function (_super) {
   _super();
   var self = this;
   self.pman = ENVIRONMENT.pman;
-  $(container).empty();
+  var container = self.container = DIV();
 
   var psearch = PeopleSearchView.create();
   var login_status_view = LoginStatusView.create();
@@ -67,4 +64,11 @@ MainScreen.constructor(function (_super, container) {
       psearch.focus();
     }
   });
+});
+
+MainView.methods({
+  element: function () {
+    var self = this;
+    return self.container;
+  }
 });

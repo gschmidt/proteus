@@ -1,21 +1,18 @@
 #require('/framework/lib/Class.js')
 
-LoginScreen = Class("LoginScreen");
+LoginView = Class("LoginView");
 
 // loggedin: fired when the user logs in
-LoginScreen.events("loggedin");
+LoginView.events("loggedin");
 
 /**
  * The main application screen -- shown all of the time, except when
  * the user is not logged in.
- *
- * @param container {element} The children of this element will be
- *   overwritten with LoginScreen
  */
-LoginScreen.constructor(function (_super, container) {
+LoginView.constructor(function (_super) {
   _super();
   var self = this;
-  $(container).empty();
+  var container = self.container = DIV();
 
   var d = $('<input type="button" value="Log in with Facebook">');
   d.click(function () {
@@ -31,4 +28,11 @@ LoginScreen.constructor(function (_super, container) {
     });
   });
   d.appendTo(container);
+});
+
+LoginView.methods({
+  element: function () {
+    var self = this;
+    return self.container;
+  }
 });

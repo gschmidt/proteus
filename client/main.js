@@ -1,8 +1,8 @@
 #require('/framework/lib/LongPollClient.js')
 #require('/framework/lib/ClientSession.js')
 #require('/client/PeopleManager.js')
-#require('/client/MainScreen.js')
-#require('/client/LoginScreen.js')
+#require('/client/MainView.js')
+#require('/client/LoginView.js')
 #require('/client/jquery-1.6.js')
 
 $(document).ready(function () {
@@ -45,13 +45,13 @@ $(document).ready(function () {
       xfmbl: true
     });
 
-    var approot = $('<div>');
-    approot.appendTo('body');
+    var approot = DIV();
+    document.body.appendChild(approot);
 
     FB.getLoginStatus(function (resp) {
       if (resp.session) {
         // already logged in
-        MainScreen.create(approot[0]);
+        approot.appendChild(MainView.create().element());
         // XXX testing -- need to do this on all paths, obviously
         // (actually, it's that we need to not drive the screen
         // transition on FB login as opposed to Proteus login)
@@ -63,10 +63,12 @@ $(document).ready(function () {
           console.log("Result of proteus login is: " + x);
         });
       } else {
-        var login = LoginScreen.create(approot[0]);
+        var login = LoginView.create();
+        approot.appendChild(login.element());
         login.on("loggedin", function () {
-          // XXX an example of a memory leak: we need to destroy LoginScreen somehow..
-          MainScreen.create(approot[0]);
+          // XXX an example of a memory leak: we need to destroy LoginView somehow..
+          $(login.element()).hide();
+          approot.appendChild(MainView.create().element());
         });
       }
     });
