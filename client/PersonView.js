@@ -1,18 +1,22 @@
 #require('/framework/lib/Class.js')
 #require('/client/PeopleManager.js')
 
-PersonDisplay = Class("PersonDisplay");
+PersonView = Class("PersonView");
 
-PersonDisplay.constructor(function (_super, container) {
+PersonView.constructor(function (_super) {
   _super();
   var self = this;
   self.selected = null; // id of currently shown person
   self.pman = ENVIRONMENT.pman;
-  self.root = ($(DIV()).appendTo(container))[0];
+  self.root = DIV();
   self._repopulate();
 });
 
-PersonDisplay.methods({
+PersonView.methods({
+  element: function () {
+    return this.root;
+  },
+
   switchToPerson: function (id) {
     var self = this;
     self.selected = id;

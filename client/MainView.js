@@ -2,7 +2,7 @@
 #require('/client/LoginStatusView.js')
 #require('/framework/lib/Html.js')
 #require('/client/PeopleSearchView.js')
-#require('/client/PersonDisplay.js')
+#require('/client/PersonView.js')
 
 MainView = Class("MainView");
 
@@ -18,6 +18,7 @@ MainView.constructor(function (_super) {
 
   var psearch = PeopleSearchView.create();
   var login_status_view = LoginStatusView.create();
+  var pdisplay = PersonView.create();
 
   var header = DIV({id: "header"}, [
     DIV({class: 'row'}, [
@@ -37,9 +38,8 @@ MainView.constructor(function (_super) {
   container.appendChild(header);
   psearch.focus();
 
-
-  var profile = $('<div id="profile"></div>').appendTo(container);
-  var pdisplay = PersonDisplay.create($('#profile')[0]);
+  var pdisplay = PersonView.create($('#profile')[0]);
+  container.appendChild(pdisplay.element());
 
   psearch.on("select", function (id) {
     pdisplay.switchToPerson(id);
