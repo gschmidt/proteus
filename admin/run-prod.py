@@ -19,6 +19,7 @@ def do_start():
 
     if platform() not in ['darwin']:
         print "This script only knows where to find Mongo on Darwin. Fix it!"
+        print "Platform: " + platform()
         return 0
 
     # If you change this, also change run-devel.py
