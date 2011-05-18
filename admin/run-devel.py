@@ -14,9 +14,14 @@ def main():
     ensure_directory(path_in_project('run/log'))
     ensure_directory(path_in_project('data/mongo'))
 
-    if platform() not in ['darwin']:
-        print "This script only knows where to find Mongo on Darwin. Fix it!"
-        return 0
+    if platform() == 'darwin':
+        mongod = path_in_project('3rdparty/mongodb-osx/bin/mongod')
+    else:
+        if platform() not in ['linux']:
+            print "This script doesn't know where to find Mongo on this platform. Fix it!"
+            print "Platform: " + platform()
+            return 0
+        mongod = "mongod"
 
     # If you change this, also change run-prod.py
     # TODO: generalize to support machines other than osx..
@@ -24,8 +29,7 @@ def main():
     print path_in_project('3rdparty/mongodb-osx/bin/mongod')
     run_daemon(
         path_in_project('run/pid/mongo.pid'),
-        [path_in_project('3rdparty/mongodb-osx/bin/mongod'),
-         '--dbpath',
+        [mongod, '--dbpath',
          path_in_project('data/mongo')],
         path_in_project('run/log/mongo.stdout'),
         path_in_project('run/log/mongo.stderr'))

@@ -39,7 +39,8 @@ $(document).ready(function () {
     FB.init({
       // XXX move to environment? definitely condition on prod vs
       // debug
-      appId: 120418858040881,
+//      appId: 120418858040881, // development
+      appId: 103293389760087, // prod
       status: true,
       cookie: true,
       xfmbl: true

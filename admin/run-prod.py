@@ -17,17 +17,21 @@ def do_start():
     ensure_directory(path_in_project('run/log'))
     ensure_directory(path_in_project('data/mongo'))
 
-    if platform() not in ['darwin']:
-        print "This script only knows where to find Mongo on Darwin. Fix it!"
-        print "Platform: " + platform()
-        return 0
+    if platform() == 'darwin':
+        mongod = path_in_project('3rdparty/mongodb-osx/bin/mongod')
+    else:
+        if platform() not in ['linux']:
+            print "This script doesn't know where to find Mongo on this platform. Fix it!"
+            print "Platform: " + platform()
+            return 0
+        mongod = "mongod"
 
     # If you change this, also change run-devel.py
     # TODO: there is a race where node starts before mongo is ready
+    # (and it does occasionally happen in practice)
     run_daemon(
         path_in_project('run/pid/mongo.pid'),
-        [path_in_project('3rdparty/mongodb-osx/bin/mongod'),
-         '--dbpath',
+        [mongod, '--dbpath',
          # TODO: figure out where we're putting data..
          path_in_project('data/mongo')],
         path_in_project('run/log/mongo.stdout'),
