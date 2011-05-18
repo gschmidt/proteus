@@ -1,4 +1,5 @@
 #require('/framework/lib/Class.js')
+#require('/framework/lib/Html.js')
 
 PeopleSearch = Class("PeopleSearch");
 

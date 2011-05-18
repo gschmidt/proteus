@@ -1,5 +1,6 @@
 #require('/framework/lib/Class.js')
 #require('/client/LoginStatusView.js')
+#require('/framework/lib/Html.js')
 
 MainScreen = Class("MainScreen");
 
@@ -16,8 +17,23 @@ MainScreen.constructor(function (_super, container) {
   self.pman = ENVIRONMENT.pman;
   $(container).empty();
 
-  var header = $('<div id="header" />').appendTo(container);
-  header.html('<div class="row"><div class="column grid_3"><div class="logo">Monument</div></div><div class="column grid_6"><div class="search"> </div></div><div class="column grid_3"><div class="account"> </div></div></div>');
+  var header = DIV({id: "header"}, [
+    DIV({class: 'row'}, [
+      DIV({class: 'column grid_3'}, [
+        DIV({class: 'logo'}, [
+          "Monument"
+        ])
+      ]),
+      DIV({class: 'column grid_6'}, [
+        DIV({class: 'search'})
+      ]),
+      DIV({class: 'column grid_3'}, [
+        DIV({class: 'account'})
+      ])
+    ])
+  ]);
+  container.appendChild(header);
+
 
   var profile = $('<div id="profile"></div>').appendTo(container);
   var psearch = PeopleSearch.create($('#header .search')[0]);

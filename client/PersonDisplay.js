@@ -8,7 +8,7 @@ PersonDisplay.constructor(function (_super, container) {
   var self = this;
   self.selected = null; // id of currently shown person
   self.pman = ENVIRONMENT.pman;
-  self.root = ($('<div/>').appendTo(container))[0];
+  self.root = ($(DIV()).appendTo(container))[0];
   self._repopulate();
 });
 
@@ -29,9 +29,10 @@ PersonDisplay.methods({
     var person = self.pman.getPerson(self.selected);
     $(self.root).html("<h1>" + person.name + "</h1>"); // XXX escaping
     if (person.fbid) {
-      var img = $('<img>');
-      img[0].src = "http://graph.facebook.com/" + person.fbid + "/picture?type=large";
-      img.appendTo(self.root);
+      var img = IMG({
+        src: "http://graph.facebook.com/" + person.fbid + "/picture?type=large"
+      });
+      $(img).appendTo(self.root);
     }
     var del = $("<input type='button' value='Delete'>");
     $(self.root).append(del);
