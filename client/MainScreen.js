@@ -1,6 +1,8 @@
 #require('/framework/lib/Class.js')
 #require('/client/LoginStatusView.js')
 #require('/framework/lib/Html.js')
+#require('/client/PeopleSearchView.js')
+#require('/client/PersonDisplay.js')
 
 MainScreen = Class("MainScreen");
 
@@ -17,7 +19,7 @@ MainScreen.constructor(function (_super, container) {
   self.pman = ENVIRONMENT.pman;
   $(container).empty();
 
-  var psearch = PeopleSearch.create();
+  var psearch = PeopleSearchView.create();
   var login_status_view = LoginStatusView.create();
 
   var header = DIV({id: "header"}, [

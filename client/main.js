@@ -1,8 +1,6 @@
 #require('/framework/lib/LongPollClient.js')
 #require('/framework/lib/ClientSession.js')
 #require('/client/PeopleManager.js')
-#require('/client/PeopleSearch.js')
-#require('/client/PersonDisplay.js')
 #require('/client/MainScreen.js')
 #require('/client/LoginScreen.js')
 #require('/client/jquery-1.6.js')

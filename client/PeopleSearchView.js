@@ -1,15 +1,15 @@
 #require('/framework/lib/Class.js')
 #require('/framework/lib/Html.js')
 
-PeopleSearch = Class("PeopleSearch");
+PeopleSearchView = Class("PeopleSearchView");
 
 /// select: fired when someone select a person.
 /// @param id {String} id of the selected person
 /// new: fired when they choose to create a new person.
 /// @param query {String} the string they entered
-PeopleSearch.events("select", "new");
+PeopleSearchView.events("select", "new");
 
-PeopleSearch.constructor(function (_super) {
+PeopleSearchView.constructor(function (_super) {
   _super();
   var self = this;
   self.pman = ENVIRONMENT.pman;
@@ -58,7 +58,7 @@ PeopleSearch.constructor(function (_super) {
   self._drawPeopleList(true);
 });
 
-PeopleSearch.methods({
+PeopleSearchView.methods({
   /// TODO: can we eliminate clearSearch and focus? They are provided
   /// because we want a global key binding on ESC.
 
