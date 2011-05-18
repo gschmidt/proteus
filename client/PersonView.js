@@ -46,7 +46,7 @@ PersonView.methods({
 
     var doc = DIV([
       H1([person.name]),
-      del,
+      DIV([del]),
       person.fbid ?
         IMG({src: "http://graph.facebook.com/" +
              person.fbid + "/picture?type=large"}) :
