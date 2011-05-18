@@ -30,10 +30,10 @@ MainScreen.constructor(function (_super, container) {
         ])
       ]),
       DIV({class: 'column grid_6'}, [
-        psearch.element()
+        psearch
       ]),
       DIV({class: 'column grid_3'}, [
-        login_status_view.element()
+        login_status_view
       ])
     ])
   ]);
@@ -62,9 +62,7 @@ MainScreen.constructor(function (_super, container) {
 
   // XXX does this need to be on body?
   $(container).keydown(function (evt) {
-    console.log("8*key");
     if (evt.which === 27)  {// esc
-      console.log("ITS ESC");
       psearch.clearSearch();
       psearch.focus();
     }

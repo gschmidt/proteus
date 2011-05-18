@@ -5,6 +5,9 @@
  *   "Some text",
  *   A({href: "/some/location"}, ["A link"]),
  *   DIV({class: "emptydiv"}),
+ *   // any object that has an element() method may be
+ *   // inserted
+ *   myView,
  *   DIV([
  *     "Both the attributes and the contents are optional",
  *     ["Lists", "are", "flattened"]
@@ -45,6 +48,8 @@
              addChildren(c);
            else if (typeof(c) === "string")
              elt.appendChild(document.createTextNode(c));
+           else if ('element' in c)
+             addChildren([c.element()]);
            else
              elt.appendChild(c);
          });
