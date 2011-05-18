@@ -17,6 +17,9 @@ MainScreen.constructor(function (_super, container) {
   self.pman = ENVIRONMENT.pman;
   $(container).empty();
 
+  var psearch = PeopleSearch.create();
+  var login_status_view = LoginStatusView.create();
+
   var header = DIV({id: "header"}, [
     DIV({class: 'row'}, [
       DIV({class: 'column grid_3'}, [
@@ -25,19 +28,18 @@ MainScreen.constructor(function (_super, container) {
         ])
       ]),
       DIV({class: 'column grid_6'}, [
-        DIV({class: 'search'})
+        psearch.element()
       ]),
       DIV({class: 'column grid_3'}, [
-        DIV({class: 'account'})
+        login_status_view.element()
       ])
     ])
   ]);
   container.appendChild(header);
+  psearch.focus();
 
 
   var profile = $('<div id="profile"></div>').appendTo(container);
-  var psearch = PeopleSearch.create($('#header .search')[0]);
-  var login_status_view = LoginStatusView.create($('#header .account')[0]);
   var pdisplay = PersonDisplay.create($('#profile')[0]);
 
   psearch.on("select", function (id) {
@@ -58,7 +60,9 @@ MainScreen.constructor(function (_super, container) {
 
   // XXX does this need to be on body?
   $(container).keydown(function (evt) {
+    console.log("8*key");
     if (evt.which === 27)  {// esc
+      console.log("ITS ESC");
       psearch.clearSearch();
       psearch.focus();
     }

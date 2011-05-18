@@ -49,18 +49,18 @@ PeopleManager.methods({
   },
   /**
    * @param query {String} Partially typed name
-   * @return {List<[String, String]>} All of the people that could
+   * @return {List<[String, element]>} All of the people that could
    * match, in hopefully some kind of useful order. The first element
    * in each pair is the id of the matching person. The second is
-   * their name with <em> tags inserted around the parts that matched
-   * the query.
+   * a DOM element that contains their name with <em> tags around the
+   * parts that matched the query.
    */
   getPeopleMatching: function (query) {
     var self = this;
     var results = {}; // id => em'd string
     var ret = [];
 
-    // TODO: ignore non-alphanumerics
+    // ignore non-alphanumerics
     query = query.replace(/[^a-zA-Z\s]/,'');
 
     var tryQuery = function (qparts) {
@@ -74,17 +74,17 @@ PeopleManager.methods({
         var p = self.people[id];
         var match = re.exec(p.name);
         if (match) {
-          var decorated = "";
+          var decorated = [];
           var i = 0;
           match.forEach(function (s) {
             i++;
             if (i == 1) return;
             if (i % 2 == 0)
-              decorated += s;
+              decorated.push(s);
             else
-              decorated += "<em>" + s + "</em>";
+              decorated.push(EM([s]));
           });
-          results[id] = decorated;
+          results[id] = SPAN(decorated);
         }
       }
     }

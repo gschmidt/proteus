@@ -6,7 +6,8 @@
  *   A({href: "/some/location"}, ["A link"]),
  *   DIV({class: "emptydiv"}),
  *   DIV([
- *     "Both the attributes and the contents are optional"
+ *     "Both the attributes and the contents are optional",
+ *     ["Lists", "are", "flattened"]
  *   })
  * ]);
  */
@@ -38,11 +39,17 @@
        var elt = document.createElement(tag);
        for (var a in attrs)
          elt.setAttribute(a, attrs[a]);
-       contents.forEach(function (c) {
-         if (typeof(c) === "string")
-           c = document.createTextNode(c);
-         elt.appendChild(c);
-       });
+       var addChildren = function (children) {
+         children.forEach(function (c) {
+           if (c instanceof Array)
+             addChildren(c);
+           else if (typeof(c) === "string")
+             elt.appendChild(document.createTextNode(c));
+           else
+             elt.appendChild(c);
+         });
+       };
+       addChildren(contents);
        return elt;
      };
    });

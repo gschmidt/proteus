@@ -2,10 +2,10 @@
 
 LoginStatusView = Class("LoginStatusView");
 
-LoginStatusView.constructor(function (_super, container) {
+LoginStatusView.constructor(function (_super) {
   _super();
   var self = this;
-  self.container = container;
+  self.container = DIV({class: 'account'});
   self.fbdata = {};
   FB.api('/me', function (resp) {
     self.fbdata = resp;
@@ -22,6 +22,11 @@ LoginStatusView.constructor(function (_super, container) {
 });
 
 LoginStatusView.methods({
+  element: function () {
+    var self = this;
+    return self.container;
+  },
+
   _update: function () {
     var self = this;
     $(self.container).empty();
