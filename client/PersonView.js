@@ -8,38 +8,34 @@ PersonView.constructor(function (_super) {
   var self = this;
   self.selected = null; // id of currently shown person
   self.pman = ENVIRONMENT.pman;
-  self.root = DIV();
+  self.element = DIV();
   self._repopulate();
 });
 
 PersonView.methods({
-  element: function () {
-    return this.root;
-  },
-
   switchToPerson: function (id) {
     var self = this;
     self.selected = id;
-    $(self.root).empty();
+    $(self.element).empty();
     self._repopulate();
   },
 
   _repopulate: function () {
     var self = this;
     if (!self.selected) {
-      $(self.root).html("Nobody selected");
+      $(self.element).html("Nobody selected");
       return;
     }
     var person = self.pman.getPerson(self.selected);
-    $(self.root).html("<h1>" + person.name + "</h1>"); // XXX escaping
+    $(self.element).html("<h1>" + person.name + "</h1>"); // XXX escaping
     if (person.fbid) {
       var img = IMG({
         src: "http://graph.facebook.com/" + person.fbid + "/picture?type=large"
       });
-      $(img).appendTo(self.root);
+      $(img).appendTo(self.element);
     }
     var del = $("<input type='button' value='Delete'>");
-    $(self.root).append(del);
+    $(self.element).append(del);
     var was_selected = self.selected; // small precaution -- close
                                       // button over current selection
     del.click(function () {
@@ -48,10 +44,10 @@ PersonView.methods({
         self.pman.deletePerson(was_selected);
     });
 
-    $("<h2>Facebook id</h2>").appendTo(self.root);
-    var idinput = $("<input type='text'>").appendTo(self.root);
+    $("<h2>Facebook id</h2>").appendTo(self.element);
+    var idinput = $("<input type='text'>").appendTo(self.element);
     idinput.val(person.fbid || '');
-    var save = $("<input type='button' value='Save'>").appendTo(self.root);
+    var save = $("<input type='button' value='Save'>").appendTo(self.element);
     save.click(function () {
       self.pman.updatePerson({id: self.selected, fbid: idinput.val()});
     });

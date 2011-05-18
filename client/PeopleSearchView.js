@@ -19,13 +19,13 @@ PeopleSearchView.constructor(function (_super) {
 
   self.field = INPUT({type: "text", placeholder: "People Search"});
   self.directory = DIV({id: "directory"});
-  self.container = DIV({class: "search"}, [
+  self.element = DIV({class: "search"}, [
     self.field,
     self.directory
   ]);
 
   //self.field.focus(); XXX can't do, not in DOM yet
-  $(self.container).keydown(function (evt) {
+  $(self.element).keydown(function (evt) {
     var moveSelection = function (offset) {
       self._eltForSelection().removeClass('selected');
       var idx = self.currentCompletions.indexOf(self.selectedCompletion);
@@ -61,12 +61,6 @@ PeopleSearchView.constructor(function (_super) {
 PeopleSearchView.methods({
   /// TODO: can we eliminate clearSearch and focus? They are provided
   /// because we want a global key binding on ESC.
-
-  // should we just make this an attribute?
-  element: function () {
-    var self = this;
-    return self.container;
-  },
 
   /// Clear the input box and hide the panel.
   clearSearch: function () {

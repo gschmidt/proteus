@@ -5,7 +5,7 @@ LoginStatusView = Class("LoginStatusView");
 LoginStatusView.constructor(function (_super) {
   _super();
   var self = this;
-  self.container = DIV({class: 'account'});
+  self.element = DIV({class: 'account'});
   self.fbdata = {};
   FB.api('/me', function (resp) {
     self.fbdata = resp;
@@ -22,27 +22,22 @@ LoginStatusView.constructor(function (_super) {
 });
 
 LoginStatusView.methods({
-  element: function () {
-    var self = this;
-    return self.container;
-  },
-
   _update: function () {
     var self = this;
-    $(self.container).empty();
+    $(self.element).empty();
 
 /*
     var img = $("<img>");
     img[0].src = "http://graph.facebook.com/" + self.fbdata.id + "/picture?type=square";
-    $(img).appendTo(self.container);
+    $(img).appendTo(self.element);
 */
     $("<div>").text(self.fbdata.name).
-      appendTo(self.container);
+      appendTo(self.element);
     $("<a>").text("Log out").click(function () {
       FB.logout(function (resp) {
         document.location = "/";
       });
-    }).appendTo(self.container);
+    }).appendTo(self.element);
 
   }
 });

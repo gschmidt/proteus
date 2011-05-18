@@ -14,7 +14,7 @@ MainView.constructor(function (_super) {
   _super();
   var self = this;
   self.pman = ENVIRONMENT.pman;
-  var container = self.container = DIV();
+  self.element = DIV();
 
   var psearch = PeopleSearchView.create();
   var login_status_view = LoginStatusView.create();
@@ -35,11 +35,11 @@ MainView.constructor(function (_super) {
       ])
     ])
   ]);
-  container.appendChild(header);
+  self.element.appendChild(header);
   psearch.focus();
 
   var pdisplay = PersonView.create($('#profile')[0]);
-  container.appendChild(pdisplay.element());
+  self.element.appendChild(pdisplay.element);
 
   psearch.on("select", function (id) {
     pdisplay.switchToPerson(id);
@@ -58,17 +58,10 @@ MainView.constructor(function (_super) {
   // if they get deleted? (like that'll ever happen, though..)
 
   // XXX does this need to be on body?
-  $(container).keydown(function (evt) {
+  $(self.element).keydown(function (evt) {
     if (evt.which === 27)  {// esc
       psearch.clearSearch();
       psearch.focus();
     }
   });
-});
-
-MainView.methods({
-  element: function () {
-    var self = this;
-    return self.container;
-  }
 });

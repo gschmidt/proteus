@@ -5,8 +5,8 @@
  *   "Some text",
  *   A({href: "/some/location"}, ["A link"]),
  *   DIV({class: "emptydiv"}),
- *   // any object that has an element() method may be
- *   // inserted
+ *   // if an object is inserted, the value of its 'element'
+ *   // attribute will be used
  *   myView,
  *   DIV([
  *     "Both the attributes and the contents are optional",
@@ -14,6 +14,9 @@
  *   })
  * ]);
  */
+
+// XXX find a place to document the contract for *View classes -- they
+// should have an attribute named 'element'
 
 // All HTML4 elements, excluding deprecated element
 // http://www.w3.org/TR/html4/index/elements.html
@@ -49,7 +52,7 @@
            else if (typeof(c) === "string")
              elt.appendChild(document.createTextNode(c));
            else if ('element' in c)
-             addChildren([c.element()]);
+             addChildren([c.element]);
            else
              elt.appendChild(c);
          });

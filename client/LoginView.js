@@ -12,7 +12,7 @@ LoginView.events("loggedin");
 LoginView.constructor(function (_super) {
   _super();
   var self = this;
-  var container = self.container = DIV();
+  self.element = DIV();
 
   var d = $('<input type="button" value="Log in with Facebook">');
   d.click(function () {
@@ -27,12 +27,5 @@ LoginView.constructor(function (_super) {
       perms:'email,offline_access'
     });
   });
-  d.appendTo(container);
-});
-
-LoginView.methods({
-  element: function () {
-    var self = this;
-    return self.container;
-  }
+  d.appendTo(self.element);
 });

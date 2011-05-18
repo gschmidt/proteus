@@ -51,7 +51,7 @@ $(document).ready(function () {
     FB.getLoginStatus(function (resp) {
       if (resp.session) {
         // already logged in
-        approot.appendChild(MainView.create().element());
+        approot.appendChild(MainView.create().element);
         // XXX testing -- need to do this on all paths, obviously
         // (actually, it's that we need to not drive the screen
         // transition on FB login as opposed to Proteus login)
@@ -64,11 +64,11 @@ $(document).ready(function () {
         });
       } else {
         var login = LoginView.create();
-        approot.appendChild(login.element());
+        approot.appendChild(login.element);
         login.on("loggedin", function () {
           // XXX an example of a memory leak: we need to destroy LoginView somehow..
-          $(login.element()).hide();
-          approot.appendChild(MainView.create().element());
+          $(login.element).hide();
+          approot.appendChild(MainView.create().element);
         });
       }
     });
