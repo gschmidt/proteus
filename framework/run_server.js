@@ -627,6 +627,7 @@
     project_root: project_root, // TODO: rename! for serious
     is_debug_mode: is_debug_mode, // ditto
     restart: function () {restart();}, // ditto ditto, plus it's ugly
+    CONFIG: null, // this one is maybe reasonable? (it's populated by main())
     console: console // TODO: remove
   };
 
@@ -652,7 +653,6 @@
   };
 
   var main = function () {
-/* we don't use this yet.. and it's never been tested, fwiw
     var my_args = process.argv.slice(2);
 
     // TODO: probably more friendly/unixy to take arguments on the
@@ -674,12 +674,12 @@
     }
 
     try {
-      var config = JSON.parse(config_unparsed);
+      app_context.CONFIG = JSON.parse(config_unparsed);
     } catch (e) {
+      console.log(config_unparsed);
       console.log(config_file + ": parse error: " + e.message);
       process.exit(1);
     }
-*/
 
     // in debug mode, if *this* file changes, restart the server
     if (is_debug_mode) {

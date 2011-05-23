@@ -1,3 +1,9 @@
+// Deploy todo:
+// - set up new ec2 instance!
+// - make the front page say something reasonable
+// - create an environment/config mechanism
+// - enforce logins
+
 // TODO: listen to the framework to find out when client code changes,
 // and push the changes to the client. current thinking: the client
 // will keep all of its durable state in a session object, which it
@@ -32,7 +38,6 @@ var
   url = require('url'),
   paperboy = require('../3rdparty/paperboy'),
 
-  PORT = 5000,
   WEBROOT = path.join(project_root, 'public');
 
 // TODO: find a better place for these
@@ -116,6 +121,9 @@ var startMongo = function (callback) {
 // Bring up the HTTP server and start accepting requests (both for
 // RPC/event subscrption channel and static resources)
 var startHttp = function () {
+  if (!'port' in CONFIG)
+    throw new Error("Config file must contain 'port'");
+
   http.createServer(function(req, res) {
     var url = require('url');
     var pathname = url.parse(req.url).pathname || '';
@@ -126,7 +134,8 @@ var startHttp = function () {
       var conn_url = conn_info[1];
       server_session.setupConnection(conn_obj);
       var client_env = {
-        connection: conn_url
+        connection: conn_url,
+        facebook_appid: CONFIG.facebook_appid
       };
 
       var env_setup = "<script>ENVIRONMENT = {" +
@@ -197,7 +206,7 @@ var startHttp = function () {
         res.end("Error " + statCode);
         log_http(statCode, req.url, ip, msg);
       });
-  }).listen(PORT);
+  }).listen(CONFIG.port);
 };
 
 var startup = function () {

@@ -39,7 +39,11 @@ def do_start():
     run_daemon(
         path_in_project('run/pid/node.pid'),
         [path_in_project('build/node/bin/node'),
-         path_in_project('framework/run_server.js')],
+         path_in_project('framework/run_server.js'),
+         # XXX: This isn't right. I should be able to pick (daemonize
+         # or stay attached) orthogonanlly from (server fbid or client
+         # fbid) and (server port or client port.)
+         path_in_project('config/devel')],
         path_in_project('run/log/node.stdout'),
         path_in_project('run/log/node.stderr'))
 

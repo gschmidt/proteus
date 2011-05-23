@@ -37,10 +37,7 @@ $(document).ready(function () {
 
   window.fbAsyncInit = function () {
     FB.init({
-      // XXX move to environment? definitely condition on prod vs
-      // debug
-//      appId: 120418858040881, // development
-      appId: 103293389760087, // prod
+      appId: ENVIRONMENT.facebook_appid,
       status: true,
       cookie: true,
       xfmbl: true

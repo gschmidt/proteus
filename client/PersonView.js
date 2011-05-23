@@ -39,6 +39,7 @@ PersonView.methods({
         self.pman.deletePerson(was_selected);
     });
 
+    var idinput = INPUT({type: "text", value: person.fbid || ''});
     var save = INPUT({type: "button", value: "Save"});
     $(save).click(function () {
       self.pman.updatePerson({id: self.selected, fbid: idinput.val()});
@@ -52,7 +53,7 @@ PersonView.methods({
              person.fbid + "/picture?type=large"}) :
         [],
       H2(["Facebook id"]),
-      INPUT({type: "text", value: person.fbid || ''}),
+      idinput,
       save
     ]);
     self.element.appendChild(doc);

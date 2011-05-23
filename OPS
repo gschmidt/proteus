@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------------
+setting up crysknife.projectmonument.org
+-------------------------------------------------------------------------------
+Start with Ubuntu 11.04 Natty EBS boot: ami-06ad526f
+
+Save key to ~/.ec2/monument-ec2-key.pem
+ssh -i ~/.ec2/monument-ec2-key.pem ubuntu@crysknife.projectmonument.org
+Add ssh to security group (if not already there)
+Create elastic IP and map to instance
+Update DNS to point to elastic IP
+
+$ sudo useradd deploy -s /bin/bash --create-home
+$ sudo su ~deploy
+  $ cd
+  $ mkdir .ssh
+  $ chmod 700 .ssh
+  $ cat > .ssh/authorized_keys [paste gschmidt's public key]
+$ sudo apt-get install git scons libssl-dev build-essential
+
+Now, ssh in as deploy@crysknife.projectmonument.org
+
+$ git clone git://github.com/gschmidt/proteus
+
+Now, you can run 'admin/deploy.py' from your dev box to bring up the
+site.

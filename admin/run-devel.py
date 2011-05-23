@@ -38,7 +38,8 @@ def main():
         try:
             # If you change this, also change run-prod.py
             ret = subprocess.call(["build/node/bin/node",
-                                   "framework/run_server.js"])
+                                   "framework/run_server.js",
+                                   path_in_project('config/devel')])
         except KeyboardInterrupt:
             print "\n<Killed>"
             break
